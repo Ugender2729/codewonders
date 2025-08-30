@@ -44,7 +44,7 @@ const Hero = () => {
 
   const professionalStats = [
     { icon: <Calendar className="w-5 h-5" />, value: "4+ Years", label: "Experience" },
-    { icon: <Users className="w-5 h-5" />, value: "15+ Projects", label: "Completed" },
+    { icon: <Users className="w-5 h-5" />, value: "7+ Projects", label: "Completed" },
     { icon: <Award className="w-5 h-5" />, value: "6 Team Members", label: "Mentored" },
     { icon: <TrendingUp className="w-5 h-5" />, value: "95%", label: "Client Satisfaction" }
   ];

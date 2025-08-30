@@ -94,7 +94,7 @@ const Header = () => {
               whileTap={{ scale: 0.95 }}
               onClick={() => {
                 // Open Google Drive link in new tab for download
-                window.open('https://docs.google.com/document/d/1QiDPciwpRC1OOaVwqe8S4FdcKijvHzIS/edit?usp=sharing&ouid=107995317623485311653&rtpof=true&sd=true', '_blank');
+                window.open('https://drive.google.com/file/d/1OvdKZxB5wXZNVPzI194Osbk-60QmRcgS/view?usp=sharing', '_blank');
               }}
               className={`flex items-center space-x-3 border-2 px-6 py-3 rounded-full transition-all duration-300 font-semibold text-lg group relative overflow-hidden ${
                 scrolled 
@@ -187,7 +187,7 @@ const Header = () => {
                 whileTap={{ scale: 0.98 }}
                 onClick={() => {
                   // Open Google Drive link in new tab for download
-                  window.open('https://docs.google.com/document/d/1QiDPciwpRC1OOaVwqe8S4FdcKijvHzIS/edit?usp=sharing&ouid=107995317623485311653&rtpof=true&sd=true', '_blank');
+                  window.open('https://drive.google.com/file/d/1OvdKZxB5wXZNVPzI194Osbk-60QmRcgS/view?usp=sharing', '_blank');
                 }}
                 className="w-full flex items-center justify-center space-x-3 border-2 border-gray-800 text-gray-800 px-6 py-3 mt-2 text-lg font-semibold rounded-full hover:bg-gray-800 hover:text-white transition-all duration-300"
               >

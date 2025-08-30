@@ -581,7 +581,7 @@ Best regards,
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
                     // Open Google Drive link in new tab for download
-                    window.open('https://docs.google.com/document/d/1QiDPciwpRC1OOaVwqe8S4FdcKijvHzIS/edit?usp=sharing&ouid=107995317623485311653&rtpof=true&sd=true', '_blank');
+                    window.open('https://drive.google.com/file/d/1OvdKZxB5wXZNVPzI194Osbk-60QmRcgS/view?usp=sharing', '_blank');
                   }}
                   className="border-2 border-white text-white px-10 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-300 shadow-lg cursor-pointer group relative overflow-hidden"
                 >
