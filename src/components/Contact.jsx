@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { Mail, Phone, MapPin, Send, Linkedin, Github, Twitter, MessageCircle, CheckCircle, AlertCircle } from 'lucide-react';
-import { sendEmail, validateFormData } from '../services/Email';
+import { Mail, Phone, MapPin, Send, Linkedin, Github, Twitter, MessageCircle, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 const Contact = () => {
   const [ref, inView] = useInView({
@@ -10,6 +10,7 @@ const Contact = () => {
     threshold: 0.1,
   });
 
+  const [currentTime, setCurrentTime] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,6 +21,30 @@ const Contact = () => {
   const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null); // 'success', 'error', null
+
+  // Update current time
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const hyderabadTime = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Kolkata',
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      }).format(now);
+      setCurrentTime(hyderabadTime);
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -37,6 +62,32 @@ const Contact = () => {
     }
   };
 
+  // Validate form data
+  const validateFormData = (formData) => {
+    const errors = {};
+
+    if (!formData.name || formData.name.trim().length < 2) {
+      errors.name = 'Name must be at least 2 characters long';
+    }
+
+    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.subject || formData.subject.trim().length < 5) {
+      errors.subject = 'Subject must be at least 5 characters long';
+    }
+
+    if (!formData.message || formData.message.trim().length < 10) {
+      errors.message = 'Message must be at least 10 characters long';
+    }
+
+    return {
+      isValid: Object.keys(errors).length === 0,
+      errors
+    };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -51,9 +102,21 @@ const Contact = () => {
     setSubmitStatus(null);
     
     try {
-      const result = await sendEmail(formData);
-      
-      if (result.success) {
+      // Using EmailJS for form submission
+      const result = await emailjs.send(
+        'service_eyuy3or', // Your EmailJS service ID
+        'template_ilz1u9g', // Your EmailJS template ID
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+          to_email: 'ugenderdharavath1@gmail.com'
+        },
+        'FuMUgsQy-CQQgT9DQ' // Your EmailJS user ID
+      );
+
+      if (result.status === 200) {
         setSubmitStatus('success');
         setFormData({ name: '', email: '', subject: '', message: '' });
         setFormErrors({});
@@ -61,8 +124,15 @@ const Contact = () => {
         setSubmitStatus('error');
       }
     } catch (error) {
-      console.error('Form submission error:', error);
-      setSubmitStatus('error');
+      console.error('EmailJS error:', error);
+      
+      // Fallback to mailto if EmailJS fails
+      const mailtoLink = `mailto:ugenderdharavath1@gmail.com?subject=${encodeURIComponent(`Portfolio Contact: ${formData.subject}`)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject}\n\nMessage:\n${formData.message}`)}`;
+      window.open(mailtoLink, '_blank');
+      
+      setSubmitStatus('success');
+      setFormData({ name: '', email: '', subject: '', message: '' });
+      setFormErrors({});
     } finally {
       setIsSubmitting(false);
     }
@@ -83,8 +153,8 @@ const Contact = () => {
     },
     {
       icon: <MapPin className="w-6 h-6" />,
-      title: "Location",
-      value: "India",
+      title: "Current Location",
+      value: "Hyderabad, India",
       link: null
     }
   ];
@@ -111,7 +181,7 @@ const Contact = () => {
   ];
 
   return (
-    <section id="contact" className="py-24 relative overflow-hidden">
+    <section id="contact" className="pt-16 pb-24 relative overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
@@ -122,6 +192,9 @@ const Contact = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/85 via-purple-900/75 to-black/70"></div>
       </div>
 
+      {/* Smooth Transition Divider */}
+      <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-transparent to-blue-900/50"></div>
+
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
@@ -130,6 +203,21 @@ const Contact = () => {
       </div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Local Time Display */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-8"
+        >
+          <div className="inline-flex items-center space-x-3 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20 shadow-lg">
+            <Clock className="w-5 h-5 text-blue-400" />
+            <span className="text-white font-medium">
+              Hyderabad Time: {currentTime}
+            </span>
+          </div>
+        </motion.div>
+
         <motion.div
           ref={ref}
           initial={{ opacity: 0, y: 50 }}
@@ -274,7 +362,7 @@ const Contact = () => {
                       formErrors.email 
                         ? 'border-red-400 bg-red-400/10' 
                         : 'border-white/20 bg-white/10 backdrop-blur-sm'
-                    }`}
+                  }`}
                     placeholder="your.email@example.com"
                   />
                   {formErrors.email && (
@@ -332,21 +420,62 @@ const Contact = () => {
               <motion.button
                 type="submit"
                 disabled={isSubmitting}
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ 
+                  scale: 1.02,
+                  y: -2,
+                  boxShadow: "0 20px 40px rgba(59, 130, 246, 0.3)"
+                }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full btn-professional py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full relative overflow-hidden group py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed rounded-xl border-2 border-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 hover:from-blue-500 hover:via-purple-500 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-2xl"
               >
-                {isSubmitting ? (
-                  <>
-                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Sending...</span>
-                  </>
-                ) : (
-                  <>
-                    <Send size={24} />
-                    <span>Send Message</span>
-                  </>
-                )}
+                {/* Animated background overlay */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: "100%" }}
+                  transition={{ duration: 0.6 }}
+                />
+                
+                {/* Button content */}
+                <div className="relative z-10 flex items-center justify-center space-x-3">
+                  {isSubmitting ? (
+                    <>
+                      <motion.div 
+                        className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      />
+                      <span>Sending via EmailJS...</span>
+                    </>
+                  ) : (
+                    <>
+                      <motion.div
+                        initial={{ scale: 1 }}
+                        whileHover={{ scale: 1.1, rotate: 15 }}
+                        transition={{ type: "spring", damping: 10, stiffness: 300 }}
+                      >
+                        <Send size={24} />
+                      </motion.div>
+                      <span>Send Message</span>
+                      <motion.div
+                        className="w-4 h-4"
+                        initial={{ x: 0 }}
+                        whileHover={{ x: 5 }}
+                        transition={{ type: "spring", damping: 15, stiffness: 300 }}
+                      >
+                        <div className="w-2 h-2 bg-white rounded-full" />
+                      </motion.div>
+                    </>
+                  )}
+                </div>
+
+                {/* Ripple effect on click */}
+                <motion.div
+                  className="absolute inset-0 bg-white/20 rounded-xl"
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileTap={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                />
               </motion.button>
 
               {/* Status Messages */}
@@ -388,14 +517,88 @@ const Contact = () => {
                 I'm currently available for freelance work and full-time opportunities. 
                 Let's discuss how I can help bring your ideas to life.
               </p>
-              <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => window.location.href = 'mailto:ugenderdharavath1@gmail.com'}
-                className="bg-white text-blue-600 px-10 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg"
-              >
-                Let's Talk
-              </motion.button>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    try {
+                      const email = 'ugenderdharavath1@gmail.com';
+                      const subject = 'Project Discussion - Portfolio Contact';
+                      const body = `Hi Ugender,
+
+I came across your portfolio and would like to discuss a potential project with you.
+
+Project Details:
+- Project Type: 
+- Timeline: 
+- Budget Range: 
+- Description: 
+
+Please let me know if you're available for a discussion.
+
+Best regards,
+[Your Name]`;
+
+                      const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                      
+                      // Try to open mailto link
+                      const mailtoWindow = window.open(mailtoLink, '_blank');
+                      
+                      // Fallback: if mailto doesn't work, copy email to clipboard
+                      setTimeout(() => {
+                        if (!mailtoWindow || mailtoWindow.closed) {
+                          navigator.clipboard.writeText(email).then(() => {
+                            alert(`Email copied to clipboard: ${email}\n\nPlease open your email client and paste the address.`);
+                          }).catch(() => {
+                            alert(`Please email me at: ${email}`);
+                          });
+                        }
+                      }, 1000);
+                    } catch (error) {
+                      // Final fallback
+                      alert(`Please email me at: ugenderdharavath1@gmail.com`);
+                    }
+                  }}
+                  className="bg-white text-blue-600 px-10 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg cursor-pointer group relative overflow-hidden"
+                >
+                  <span className="relative z-10 flex items-center justify-center space-x-2">
+                    <span>Let's Talk</span>
+                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </span>
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    initial={{ x: "-100%" }}
+                    whileHover={{ x: "100%" }}
+                    transition={{ duration: 0.6 }}
+                  />
+                </motion.button>
+                
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    // Open Google Drive link in new tab for download
+                    window.open('https://docs.google.com/document/d/1QiDPciwpRC1OOaVwqe8S4FdcKijvHzIS/edit?usp=sharing&ouid=107995317623485311653&rtpof=true&sd=true', '_blank');
+                  }}
+                  className="border-2 border-white text-white px-10 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-300 shadow-lg cursor-pointer group relative overflow-hidden"
+                >
+                  <span className="relative z-10 flex items-center justify-center space-x-2">
+                    <span>Download CV</span>
+                    <svg className="w-5 h-5 group-hover:translate-y-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </span>
+                  <motion.div
+                    className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    initial={{ y: "100%" }}
+                    whileHover={{ y: "0%" }}
+                    transition={{ duration: 0.6 }}
+                  />
+                </motion.button>
+              </div>
             </div>
           </div>
         </motion.div>

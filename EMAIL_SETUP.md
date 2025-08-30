@@ -204,3 +204,4 @@ Once configured, your portfolio will:
 - ✅ Work across all devices
 
 Your contact form is now fully functional and ready to receive emails from potential clients and collaborators!
+

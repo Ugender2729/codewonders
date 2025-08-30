@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Menu, X, Download } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,49 +46,100 @@ const Header = () => {
         <div className="flex justify-between items-center h-20">
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="text-3xl font-bold text-gradient-animated"
+            className={`text-3xl font-bold transition-colors duration-200 ${
+              scrolled ? 'text-gray-800' : 'text-gradient-animated'
+            }`}
           >
             UD
           </motion.div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-10">
-            {navItems.map((item, index) => (
-              <motion.button
-                key={item.name}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ scale: 1.1, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => scrollToSection(item.href)}
-                className="text-gray-700 hover:text-blue-600 transition-all duration-300 font-semibold text-lg relative group"
-              >
-                {item.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 group-hover:w-full"></span>
-              </motion.button>
-            ))}
+          {/* Navigation Links */}
+          <nav className="hidden md:flex items-center space-x-8">
+            <button onClick={() => scrollToSection('#home')} className={`transition-colors duration-200 font-medium ${
+              scrolled ? 'text-gray-800 hover:text-blue-600' : 'text-white hover:text-blue-400'
+            }`}>
+              Home
+            </button>
+            <button onClick={() => scrollToSection('#about')} className={`transition-colors duration-200 font-medium ${
+              scrolled ? 'text-gray-800 hover:text-blue-600' : 'text-white hover:text-blue-400'
+            }`}>
+              About
+            </button>
+            <button onClick={() => scrollToSection('#skills')} className={`transition-colors duration-200 font-medium ${
+              scrolled ? 'text-gray-800 hover:text-blue-600' : 'text-white hover:text-blue-400'
+            }`}>
+              Skills
+            </button>
+            <button onClick={() => scrollToSection('#experience')} className={`transition-colors duration-200 font-medium ${
+              scrolled ? 'text-gray-800 hover:text-blue-600' : 'text-white hover:text-blue-400'
+            }`}>
+              Experience
+            </button>
+            <button onClick={() => scrollToSection('#projects')} className={`transition-colors duration-200 font-medium ${
+              scrolled ? 'text-gray-800 hover:text-blue-600' : 'text-white hover:text-blue-400'
+            }`}>
+              Projects
+            </button>
+            <button onClick={() => scrollToSection('#contact')} className={`transition-colors duration-200 font-medium ${
+              scrolled ? 'text-gray-800 hover:text-blue-600' : 'text-white hover:text-blue-400'
+            }`}>
+              Contact
+            </button>
           </nav>
 
-          {/* Download CV Button */}
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            className="hidden md:flex items-center space-x-3 btn-professional px-6 py-3 text-lg font-semibold"
-          >
-            <Download size={20} />
-            <span>Download CV</span>
-          </motion.button>
+          {/* CTA Buttons */}
+          <div className="hidden md:flex items-center space-x-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                // Open Google Drive link in new tab for download
+                window.open('https://docs.google.com/document/d/1QiDPciwpRC1OOaVwqe8S4FdcKijvHzIS/edit?usp=sharing&ouid=107995317623485311653&rtpof=true&sd=true', '_blank');
+              }}
+              className={`flex items-center space-x-3 border-2 px-6 py-3 rounded-full transition-all duration-300 font-semibold text-lg group relative overflow-hidden ${
+                scrolled 
+                  ? 'border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white' 
+                  : 'border-white text-white hover:bg-white hover:text-gray-900'
+              }`}
+            >
+              <span className="relative z-10 flex items-center space-x-2">
+                <svg className="w-5 h-5 group-hover:translate-y-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span>Download CV</span>
+              </span>
+              <motion.div
+                className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                initial={{ y: "100%" }}
+                whileHover={{ y: "0%" }}
+                transition={{ duration: 0.6 }}
+              />
+            </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}
+              className={`flex items-center space-x-3 px-6 py-3 text-lg font-semibold transition-all duration-300 ${
+                scrolled 
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500' 
+                  : 'btn-professional'
+              }`}
+            >
+              <span>Get In Touch</span>
+            </motion.button>
+          </div>
 
           {/* Mobile menu button */}
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-3 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-all duration-300"
+            className={`md:hidden p-3 rounded-xl transition-all duration-300 ${
+              scrolled 
+                ? 'text-gray-700 hover:text-blue-600 hover:bg-gray-100' 
+                : 'text-white hover:text-blue-400 hover:bg-white/10'
+            }`}
           >
             {isOpen ? <X size={28} /> : <Menu size={28} />}
           </motion.button>
@@ -122,9 +173,27 @@ const Header = () => {
                 transition={{ duration: 0.3, delay: 0.6 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full flex items-center justify-center space-x-3 btn-professional px-6 py-3 mt-4 text-lg font-semibold"
+                onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}
+                className="w-full flex items-center justify-center space-x-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 mt-4 text-lg font-semibold rounded-xl hover:from-blue-500 hover:to-purple-500 transition-all duration-300"
               >
-                <Download size={20} />
+                <span>Get In Touch</span>
+              </motion.button>
+              
+              <motion.button 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.7 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  // Open Google Drive link in new tab for download
+                  window.open('https://docs.google.com/document/d/1QiDPciwpRC1OOaVwqe8S4FdcKijvHzIS/edit?usp=sharing&ouid=107995317623485311653&rtpof=true&sd=true', '_blank');
+                }}
+                className="w-full flex items-center justify-center space-x-3 border-2 border-gray-800 text-gray-800 px-6 py-3 mt-2 text-lg font-semibold rounded-full hover:bg-gray-800 hover:text-white transition-all duration-300"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
                 <span>Download CV</span>
               </motion.button>
             </div>

@@ -48,6 +48,15 @@ const Skills = () => {
       ]
     },
     {
+      title: "AI Tools & Modern Platforms",
+      icon: <Database className="w-8 h-8" />,
+      skills: [
+        { name: "Cursor AI", level: 90, color: "from-emerald-500 to-green-500" },
+        { name: "Supabase", level: 85, color: "from-green-500 to-emerald-600" },
+        { name: "Firebase", level: 88, color: "from-orange-500 to-yellow-500" },
+      ]
+    },
+    {
       title: "Tools & Platforms",
       icon: <Server className="w-8 h-8" />,
       skills: [
@@ -152,7 +161,8 @@ const Skills = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
                 "Agile/Scrum", "REST APIs", "Google Maps API", "JWT Authentication",
-                "Responsive Design", "Performance Optimization", "Cross-browser Compatibility", "CI/CD Pipeline"
+                "Responsive Design", "Performance Optimization", "Cross-browser Compatibility", "CI/CD Pipeline",
+                "AI-Powered Development", "Real-time Databases", "Cloud Functions", "API Integration"
               ].map((skill, index) => (
                 <motion.div
                   key={index}
